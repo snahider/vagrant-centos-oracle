@@ -11,19 +11,22 @@
         - unzip
     - name: unzip oracle rpm
       command: /usr/bin/unzip -q /vagrant/oracle/oracle*.rpm.zip -d /vagrant/oracle creates=/vagrant/oracle/Disk1
+    - name: add swap space
+      shell: sh /vagrant/oracle/swap.sh
     - name: install oracle
       shell: /bin/rpm -ivh /vagrant/oracle/Disk1/oracle-xe-11.2.0-1.0.x86_64.rpm creates=/u01
+    - name: add hostname to hosts file
+      shell: HOSTNAME=$(hostname); /bin/echo "127.0.0.1 $HOSTNAME" >>/etc/hosts
     - name: configure oracle
       shell: /etc/init.d/oracle-xe configure responseFile=/vagrant/oracle/xe.rsp
-      ignore_errors: True
-    - name: setup oracle environment
+    - name: setup oracle environment for vagrant user
       shell: /bin/echo 'source /u01/app/oracle/product/11.2.0/xe/bin/oracle_env.sh' >> /home/vagrant/.bash_profile
+    - name: enable remote connection
+      shell: ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe /u01/app/oracle/product/11.2.0/xe/bin/sqlplus
+        system/password@localhost < /vagrant/oracle/set_listener.sql
     - name: open Oracle Service port in iptables
       shell: iptables -I INPUT -p tcp --dport 1521 -j ACCEPT
     - name: open Oracle Http port in iptables
       shell: iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
     - name: save iptables config
       shell: service iptables save
-    - name: set oracle listener
-      shell: ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe /u01/app/oracle/product/11.2.0/xe/bin/sqlplus
-        system/manager@localhost < /vagrant/oracle/set_listener.sql
