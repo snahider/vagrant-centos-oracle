@@ -5,8 +5,8 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "CentOS-6.4-x86_64"
-  config.vm.box_url = "https://dl.dropboxusercontent.com/u/3318148/vagrant/CentOS-6.4-x86_64-v2.box"
+  config.vm.box = "centos65-64"
+  # config.vm.box_url = "https://vagrantcloud.com/nrel/boxes/CentOS-6.5-x86_64"
 
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", "1024"]
